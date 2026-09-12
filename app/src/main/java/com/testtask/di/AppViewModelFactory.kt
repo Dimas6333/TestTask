@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.testtask.domain.repository.TableRepository
+import com.testtask.ui.setup.SetupViewModel
 import javax.inject.Inject
 
 internal class AppViewModelFactory @Inject constructor(
@@ -11,6 +12,11 @@ internal class AppViewModelFactory @Inject constructor(
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-        error("Unknown ViewModel ${modelClass.name}")
+        val viewModel = when {
+            modelClass.isAssignableFrom(SetupViewModel::class.java) -> SetupViewModel()
+            else -> error("Unknown ViewModel ${modelClass.name}")
+        }
+        @Suppress("UNCHECKED_CAST")
+        return viewModel as T
     }
 }

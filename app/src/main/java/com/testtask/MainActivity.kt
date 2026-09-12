@@ -4,12 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.ui.Modifier
 import com.testtask.di.AppViewModelFactory
-import com.testtask.ui.theme.TableTheme
+import com.testtask.ui.TableApp
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
@@ -21,11 +17,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TableTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    Text("Table")
-                }
-            }
+            TableApp(viewModelFactory = viewModelFactory)
         }
     }
 }
