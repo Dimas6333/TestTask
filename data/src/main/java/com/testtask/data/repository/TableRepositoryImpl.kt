@@ -4,20 +4,22 @@ import com.testtask.domain.model.CellId
 import com.testtask.domain.model.Table
 import com.testtask.domain.model.TableSize
 import com.testtask.domain.repository.TableRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 internal class TableRepositoryImpl(
     private val random: Random,
 ) : TableRepository {
 
-    override suspend fun createTable(size: TableSize): Table {
+    override suspend fun createTable(size: TableSize) = withContext(Dispatchers.Default) {
         val values = HashMap<CellId, String>(size.rows * size.columns)
         for (row in 0 until size.rows) {
             for (column in 0 until size.columns) {
                 values[CellId(row, column)] = randomValue()
             }
         }
-        return Table(size, values)
+        Table(size, values)
     }
 
     private fun randomValue(): String {
