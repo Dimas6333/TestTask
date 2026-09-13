@@ -47,6 +47,15 @@ class TableViewModel(
     fun onEvent(event: TableScreenEvent) {
         when (event) {
             TableScreenEvent.Back -> backEvents.trySend(Unit)
+            is TableScreenEvent.CellClick -> toggleHighlight(event.cellId)
+        }
+    }
+
+    private fun toggleHighlight(cellId: CellId) {
+        _uiState.update { state ->
+            state.copy(rows = state.rows.mapCells { cell ->
+                if (cell.id == cellId) cell.copy(highlighted = !cell.highlighted) else cell
+            })
         }
     }
 }
@@ -57,3 +66,7 @@ private fun Table.toCellRows() = List(size.rows) { row ->
         CellUiModel(id = id, value = values.getValue(id), highlighted = false)
     }
 }
+
+private fun List<List<CellUiModel>>.mapCells(
+    transform: (CellUiModel) -> CellUiModel,
+) = map { row -> row.map(transform) }

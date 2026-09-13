@@ -1,6 +1,7 @@
 package com.testtask.ui.table
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -102,6 +103,7 @@ fun TableScreen(
                             state.rows[rowIndex].forEach { cell ->
                                 TableCellView(
                                     cell = cell,
+                                    onEvent = onEvent,
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight(),
@@ -118,6 +120,7 @@ fun TableScreen(
 @Composable
 private fun TableCellView(
     cell: CellUiModel,
+    onEvent: (TableScreenEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -129,6 +132,7 @@ private fun TableCellView(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .clickable { onEvent(TableScreenEvent.CellClick(cell.id)) }
                 .padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center,
         ) {
