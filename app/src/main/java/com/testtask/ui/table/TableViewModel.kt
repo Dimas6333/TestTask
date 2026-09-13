@@ -1,5 +1,6 @@
 package com.testtask.ui.table
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.testtask.domain.model.CellId
@@ -19,11 +20,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TableViewModel(
+    savedStateHandle: SavedStateHandle,
     createTableUseCase: CreateTableUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
-        TableUiState(size = checkNotNull(pendingSize))
+        TableUiState(
+            size = TableSize(
+                rows = checkNotNull(savedStateHandle.get<Int>(TableRoute.ROWS_ARG)),
+                columns = checkNotNull(savedStateHandle.get<Int>(TableRoute.COLUMNS_ARG)),
+            ),
+        )
     )
     val uiState: StateFlow<TableUiState> = _uiState.asStateFlow()
 
@@ -41,10 +48,6 @@ class TableViewModel(
         when (event) {
             TableScreenEvent.Back -> backEvents.trySend(Unit)
         }
-    }
-
-    companion object {
-        var pendingSize: TableSize? = null
     }
 }
 

@@ -2,6 +2,7 @@ package com.testtask.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.testtask.domain.repository.TableRepository
 import com.testtask.domain.usecase.CreateTableUseCase
@@ -17,7 +18,10 @@ internal class AppViewModelFactory @Inject constructor(
         val viewModel = when {
             modelClass.isAssignableFrom(SetupViewModel::class.java) -> SetupViewModel()
             modelClass.isAssignableFrom(TableViewModel::class.java) ->
-                TableViewModel(CreateTableUseCase(tableRepository))
+                TableViewModel(
+                    extras.createSavedStateHandle(),
+                    CreateTableUseCase(tableRepository),
+                )
             else -> error("Unknown ViewModel ${modelClass.name}")
         }
         @Suppress("UNCHECKED_CAST")
