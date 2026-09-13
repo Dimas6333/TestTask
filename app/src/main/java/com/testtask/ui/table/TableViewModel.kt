@@ -9,6 +9,7 @@ import com.testtask.domain.model.TableSize
 import com.testtask.domain.usecase.CreateTableUseCase
 import com.testtask.ui.table.model.TableScreenEvent
 import com.testtask.ui.table.models.TableUiState
+import com.testtask.ui.table.models.TableUiState.CellEditorUiModel
 import com.testtask.ui.table.models.TableUiState.CellUiModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -48,6 +49,10 @@ class TableViewModel(
         when (event) {
             TableScreenEvent.Back -> backEvents.trySend(Unit)
             is TableScreenEvent.CellClick -> toggleHighlight(event.cellId)
+            is TableScreenEvent.CellDoubleClick -> openEditor(event.cellId)
+            is TableScreenEvent.EditorValueChanged -> updateEditorValue(event.value)
+            TableScreenEvent.EditDismissed -> closeEditor()
+            TableScreenEvent.EditConfirmed -> confirmEdit()
         }
     }
 
@@ -56,6 +61,34 @@ class TableViewModel(
             state.copy(rows = state.rows.mapCells { cell ->
                 if (cell.id == cellId) cell.copy(highlighted = !cell.highlighted) else cell
             })
+        }
+    }
+
+    private fun openEditor(cellId: CellId) {
+        _uiState.update { state ->
+            val cell = state.rows[cellId.row][cellId.column]
+            state.copy(editor = CellEditorUiModel(cellId = cell.id, value = cell.value))
+        }
+    }
+
+    private fun updateEditorValue(value: String) {
+        _uiState.update { state ->
+            state.copy(editor = state.editor?.copy(value = value))
+        }
+    }
+
+    private fun closeEditor() {
+        _uiState.update { it.copy(editor = null) }
+    }
+
+    private fun confirmEdit() {
+        _uiState.update { state ->
+            val editor = checkNotNull(state.editor)
+            state.copy(
+                rows = state.rows.mapCells { cell ->
+                    if (cell.id == editor.cellId) cell.copy(value = editor.value) else cell
+                },
+            )
         }
     }
 }

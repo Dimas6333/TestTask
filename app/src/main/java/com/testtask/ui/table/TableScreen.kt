@@ -1,7 +1,7 @@
 package com.testtask.ui.table
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,6 +118,9 @@ fun TableScreen(
             }
         }
     }
+    state.editor?.let { editor ->
+        EditCellDialog(value = editor.value, onEvent = onEvent)
+    }
 }
 
 @Composable
@@ -132,7 +138,10 @@ private fun TableCellView(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .clickable { onEvent(TableScreenEvent.CellClick(cell.id)) }
+                .combinedClickable(
+                    onClick = { onEvent(TableScreenEvent.CellClick(cell.id)) },
+                    onDoubleClick = { onEvent(TableScreenEvent.CellDoubleClick(cell.id)) },
+                )
                 .padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -145,4 +154,33 @@ private fun TableCellView(
             )
         }
     }
+}
+
+@Composable
+private fun EditCellDialog(
+    value: String,
+    onEvent: (TableScreenEvent) -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { onEvent(TableScreenEvent.EditDismissed) },
+        title = { Text(stringResource(R.string.table_edit_cell)) },
+        text = {
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = value,
+                onValueChange = { onEvent(TableScreenEvent.EditorValueChanged(it)) },
+                singleLine = true,
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onEvent(TableScreenEvent.EditConfirmed) }) {
+                Text(stringResource(R.string.table_edit_save))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onEvent(TableScreenEvent.EditDismissed) }) {
+                Text(stringResource(R.string.table_edit_cancel))
+            }
+        },
+    )
 }
