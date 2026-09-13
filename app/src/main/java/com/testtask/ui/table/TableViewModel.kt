@@ -88,6 +88,7 @@ class TableViewModel(
                 rows = state.rows.mapCells { cell ->
                     if (cell.id == editor.cellId) cell.copy(value = editor.value) else cell
                 },
+                editor = null,
             )
         }
     }
