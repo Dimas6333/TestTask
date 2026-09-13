@@ -11,9 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.testtask.ui.setup.SetupScreen
+import com.testtask.ui.table.TableScreen
+import com.testtask.ui.table.TableViewModel
 import com.testtask.ui.theme.TableTheme
 
 private const val SETUP_ROUTE = "setup"
+private const val TABLE_ROUTE = "table"
 
 internal val LocalViewModelFactory = staticCompositionLocalOf<ViewModelProvider.Factory> {
     error("ViewModelFactory is not provided")
@@ -30,7 +33,15 @@ fun TableApp(viewModelFactory: ViewModelProvider.Factory) {
                     startDestination = SETUP_ROUTE,
                 ) {
                     composable(SETUP_ROUTE) {
-                        SetupScreen(onOpenTable = { })
+                        SetupScreen(
+                            onOpenTable = { size ->
+                                TableViewModel.pendingSize = size
+                                navController.navigate(TABLE_ROUTE)
+                            }
+                        )
+                    }
+                    composable(TABLE_ROUTE) {
+                        TableScreen(onBack = { navController.popBackStack() })
                     }
                 }
             }
