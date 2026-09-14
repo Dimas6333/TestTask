@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.testtask.R
 import com.testtask.domain.model.TableSize
 import com.testtask.ui.LocalViewModelFactory
+import com.testtask.ui.setup.model.FieldError
 import com.testtask.ui.setup.model.SetupScreenEvent
 import com.testtask.ui.setup.models.SetupUiState
 
@@ -71,6 +72,16 @@ fun SetupScreen(
                 value = uiState.rowsInput,
                 onValueChange = { onEvent(SetupScreenEvent.RowsChanged(it)) },
                 label = { Text(stringResource(R.string.setup_rows)) },
+                supportingText = {
+                    Text(
+                        fieldHint(
+                            uiState.rowsError,
+                            SetupViewModel.MIN_ROWS,
+                            SetupViewModel.MAX_ROWS,
+                        )
+                    )
+                },
+                isError = uiState.rowsError != null,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
@@ -79,6 +90,16 @@ fun SetupScreen(
                 value = uiState.columnsInput,
                 onValueChange = { onEvent(SetupScreenEvent.ColumnsChanged(it)) },
                 label = { Text(stringResource(R.string.setup_columns)) },
+                supportingText = {
+                    Text(
+                        fieldHint(
+                            uiState.columnsError,
+                            SetupViewModel.MIN_COLUMNS,
+                            SetupViewModel.MAX_COLUMNS,
+                        )
+                    )
+                },
+                isError = uiState.columnsError != null,
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             )
@@ -90,4 +111,11 @@ fun SetupScreen(
             }
         }
     }
+}
+
+@Composable
+private fun fieldHint(error: FieldError?, min: Int, max: Int) = when (error) {
+    FieldError.Empty -> stringResource(R.string.setup_field_required)
+    FieldError.OutOfRange -> stringResource(R.string.setup_field_out_of_range, min, max)
+    null -> stringResource(R.string.setup_field_hint, min, max)
 }
